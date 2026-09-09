@@ -42,6 +42,10 @@
     .preserve-3d {
       transform-style: preserve-3d;
     }
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
     .ios-squircle {
       border-radius: 22.5%;
     }
@@ -130,10 +134,10 @@
       <div class="relative perspective-container w-full flex-1 flex items-center justify-center">
         
         <!-- Center Master Rig -->
-        <div id="phone-rig" class="relative preserve-3d transition-transform duration-100 ease-out flex items-center justify-center origin-center" style="transform: rotateX(8deg) rotateY(-18deg) scale(0.95);">
+        <div id="phone-rig" class="relative preserve-3d transition-transform duration-100 ease-out flex items-center justify-center origin-center" style="transform: rotateX(8deg) rotateY(-16deg) scale(0.95);">
           
           <!-- LEFT / COVER CHASSIS -->
-          <div id="left-chassis" class="relative w-[285px] h-[585px] bg-[#1c1c1f] rounded-[48px] p-2.5 border border-[#3e3e44] shadow-[0_30px_70px_rgba(0,0,0,0.95)] z-20 flex-shrink-0">
+          <div id="left-chassis" class="relative w-[285px] h-[585px] bg-[#1c1c1f] rounded-[48px] p-2.5 border border-[#3e3e44] shadow-[0_30px_70px_rgba(0,0,0,0.95)] z-20 flex-shrink-0 backface-hidden">
             
             <!-- Side Buttons -->
             <div class="absolute -left-[3.5px] top-28 w-[3.5px] h-14 bg-gradient-to-b from-[#3a3a3c] via-[#555] to-[#3a3a3c] rounded-l-sm"></div>
@@ -141,17 +145,16 @@
             <div class="absolute -right-[3.5px] top-40 w-[3.5px] h-12 bg-gradient-to-b from-[#3a3a3c] via-[#555] to-[#3a3a3c] rounded-r-sm"></div>
 
             <!-- Bezel Area -->
-            <div class="relative w-full h-full rounded-[40px] overflow-hidden bg-black border border-black flex flex-col justify-between">
+            <div class="relative w-full h-full rounded-[40px] overflow-hidden bg-black border border-black flex flex-col justify-between backface-hidden">
               
               <!-- COVER LOCK SCREEN -->
-              <div id="lockscreen-ui" class="absolute inset-0 ios-lock-wallpaper p-5 flex flex-col justify-between transition-opacity duration-500 opacity-100 z-10">
+              <div id="lockscreen-ui" class="absolute inset-0 ios-lock-wallpaper p-5 flex flex-col justify-between transition-opacity duration-500 opacity-100 z-10 backface-hidden">
                 
                 <!-- Status Bar & Dynamic Island -->
                 <div>
                   <div class="flex items-center justify-between text-[11px] font-semibold tracking-tight text-white/90 px-2 pt-0.5">
                     <span>9:41</span>
                     <div class="flex items-center space-x-1.5 text-white/80">
-                      <!-- 4 Signal Bars -->
                       <div class="flex items-end space-x-[1.5px] h-2.5">
                         <div class="w-[2.5px] h-1 bg-white rounded-[0.5px]"></div>
                         <div class="w-[2.5px] h-1.5 bg-white rounded-[0.5px]"></div>
@@ -159,7 +162,6 @@
                         <div class="w-[2.5px] h-2.5 bg-white rounded-[0.5px]"></div>
                       </div>
                       <span class="text-[10px] font-bold">5G</span>
-                      <!-- Battery -->
                       <div class="w-5 h-2.5 border border-white/70 rounded-[3px] p-[1px] flex items-center">
                         <div class="w-full h-full bg-white rounded-[1.5px]"></div>
                       </div>
@@ -219,7 +221,7 @@
               </div>
 
               <!-- INNER CANVAS LEFT HALF: Notes & DuoOS Workspace -->
-              <div id="unfolded-left-ui" class="absolute inset-0 ios-wallpaper p-5 flex flex-col justify-between transition-opacity duration-500 opacity-0 z-0">
+              <div id="unfolded-left-ui" class="absolute inset-0 ios-wallpaper p-5 flex flex-col justify-between transition-opacity duration-500 opacity-0 z-0 backface-hidden">
                 <!-- Status bar -->
                 <div class="flex items-center justify-between text-[11px] font-semibold text-white/80">
                   <span>9:41</span>
@@ -260,12 +262,12 @@
           <div id="hinge-spine" class="w-[7px] h-[565px] bg-gradient-to-r from-[#1c1c1f] via-[#48484e] to-[#1c1c1f] shadow-inner flex-shrink-0 z-30 transition-all duration-300"></div>
 
           <!-- RIGHT / UNFOLDING CHASSIS -->
-          <div id="right-chassis" class="relative w-[285px] h-[585px] bg-[#1c1c1f] rounded-[48px] p-2.5 border border-[#3e3e44] shadow-[0_30px_70px_rgba(0,0,0,0.95)] z-10 flex-shrink-0 origin-left preserve-3d transition-transform duration-100 ease-out" style="transform: rotateY(0deg);">
+          <div id="right-chassis" class="relative w-[285px] h-[585px] bg-[#1c1c1f] rounded-[48px] p-2.5 border border-[#3e3e44] shadow-[0_30px_70px_rgba(0,0,0,0.95)] z-10 flex-shrink-0 origin-left preserve-3d backface-hidden transition-transform duration-100 ease-out" style="transform: rotateY(0deg);">
             
-            <div class="relative w-full h-full rounded-[40px] overflow-hidden bg-black border border-black flex flex-col justify-between">
+            <div class="relative w-full h-full rounded-[40px] overflow-hidden bg-black border border-black flex flex-col justify-between backface-hidden">
               
               <!-- INNER CANVAS RIGHT HALF: True iOS Springboard Layout -->
-              <div class="absolute inset-0 ios-wallpaper p-4 flex flex-col justify-between">
+              <div id="springboard-ui" class="absolute inset-0 ios-wallpaper p-4 flex flex-col justify-between backface-hidden">
                 
                 <!-- Top: Status bar -->
                 <div class="flex items-center justify-end text-[11px] font-semibold text-white/80 space-x-2 px-1 pt-1">
@@ -281,7 +283,7 @@
                   <!-- 4x3 Accurate Apple App Icon Grid -->
                   <div class="grid grid-cols-4 gap-y-3.5 gap-x-2 text-center">
                     
-                    <!-- 1. Calendar (Iconic Red Bar + Date Number) -->
+                    <!-- 1. Calendar -->
                     <div class="flex flex-col items-center space-y-1">
                       <div class="w-11 h-11 ios-squircle bg-white flex flex-col items-center justify-between shadow-lg overflow-hidden border border-black/10">
                         <div class="w-full bg-[#ff3b30] text-[8px] font-bold text-white uppercase tracking-tighter py-[1px] leading-tight">WED</div>
@@ -290,7 +292,7 @@
                       <span class="app-label">Calendar</span>
                     </div>
 
-                    <!-- 2. Clock (Real Vector Face with Hands) -->
+                    <!-- 2. Clock -->
                     <div class="flex flex-col items-center space-y-1">
                       <div class="w-11 h-11 ios-squircle bg-black flex items-center justify-center shadow-lg relative border border-white/10">
                         <div class="absolute top-1 w-[1px] h-1 bg-white/70"></div>
@@ -305,7 +307,7 @@
                       <span class="app-label">Clock</span>
                     </div>
 
-                    <!-- 3. Photos (Multi-Colored Flower/Pinwheel) -->
+                    <!-- 3. Photos -->
                     <div class="flex flex-col items-center space-y-1">
                       <div class="w-11 h-11 ios-squircle bg-white flex items-center justify-center shadow-lg border border-black/10">
                         <svg class="w-8 h-8" viewBox="0 0 100 100">
@@ -324,7 +326,7 @@
                       <span class="app-label">Photos</span>
                     </div>
 
-                    <!-- 4. Camera (Authentic Gray Body + Lens Aperture) -->
+                    <!-- 4. Camera -->
                     <div class="flex flex-col items-center space-y-1">
                       <div class="w-11 h-11 ios-squircle bg-gradient-to-b from-[#8e8e93] to-[#48484a] flex items-center justify-center shadow-lg relative border border-white/10">
                         <div class="w-6 h-6 rounded-full bg-gradient-to-b from-[#1c1c1e] to-[#000] border border-[#555] flex items-center justify-center shadow-inner">
@@ -337,7 +339,7 @@
                       <span class="app-label">Camera</span>
                     </div>
 
-                    <!-- 5. Mail (Blue Gradient + Crisp Folded Envelope) -->
+                    <!-- 5. Mail -->
                     <div class="flex flex-col items-center space-y-1">
                       <div class="w-11 h-11 ios-squircle bg-gradient-to-b from-[#1a8cff] to-[#0066d6] flex items-center justify-center shadow-lg border border-blue-400/20">
                         <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -348,7 +350,7 @@
                       <span class="app-label">Mail</span>
                     </div>
 
-                    <!-- 6. Weather (Blue Sky + Radiant Sun & Cloud) -->
+                    <!-- 6. Weather -->
                     <div class="flex flex-col items-center space-y-1">
                       <div class="w-11 h-11 ios-squircle bg-gradient-to-b from-[#3a88e9] to-[#1d5ab9] flex items-center justify-center shadow-lg relative overflow-hidden border border-blue-300/20">
                         <div class="absolute top-1.5 right-2 w-4 h-4 rounded-full bg-[#ffcc00] shadow-[0_0_8px_#ffcc00]"></div>
@@ -359,7 +361,7 @@
                       <span class="app-label">Weather</span>
                     </div>
 
-                    <!-- 7. Maps (Highway Interchange Grid + Location Pin) -->
+                    <!-- 7. Maps -->
                     <div class="flex flex-col items-center space-y-1">
                       <div class="w-11 h-11 ios-squircle bg-[#b0db99] flex items-center justify-center shadow-lg relative overflow-hidden border border-black/10">
                         <div class="absolute inset-0">
@@ -376,7 +378,7 @@
                       <span class="app-label">Maps</span>
                     </div>
 
-                    <!-- 8. Notes (Yellow Header + Lined Legal Pad) -->
+                    <!-- 8. Notes -->
                     <div class="flex flex-col items-center space-y-1">
                       <div class="w-11 h-11 ios-squircle bg-white flex flex-col shadow-lg overflow-hidden border border-black/10">
                         <div class="w-full h-3 bg-[#e8be35] border-b border-[#cca322]"></div>
@@ -389,7 +391,7 @@
                       <span class="app-label">Notes</span>
                     </div>
 
-                    <!-- 9. Health (White Squircle + Red/Pink Gradient Heart) -->
+                    <!-- 9. Health -->
                     <div class="flex flex-col items-center space-y-1">
                       <div class="w-11 h-11 ios-squircle bg-white flex items-center justify-center shadow-lg border border-black/10">
                         <svg class="w-6 h-6 fill-[#ff2d55]" viewBox="0 0 24 24">
@@ -399,7 +401,7 @@
                       <span class="app-label">Health</span>
                     </div>
 
-                    <!-- 10. App Store (Blue Gradient + Stylized 'A' Sticks) -->
+                    <!-- 10. App Store -->
                     <div class="flex flex-col items-center space-y-1">
                       <div class="w-11 h-11 ios-squircle bg-gradient-to-b from-[#1ac8ff] to-[#0070e0] flex items-center justify-center shadow-lg border border-blue-400/30">
                         <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -411,7 +413,7 @@
                       <span class="app-label">App Store</span>
                     </div>
 
-                    <!-- 11. Settings (Layered Mechanical Gears on Gray Gradient) -->
+                    <!-- 11. Settings -->
                     <div class="flex flex-col items-center space-y-1">
                       <div class="w-11 h-11 ios-squircle bg-gradient-to-b from-[#8e8e93] to-[#636366] flex items-center justify-center shadow-lg border border-white/10">
                         <svg class="w-6 h-6 text-[#d1d1d6]" viewBox="0 0 24 24" fill="currentColor">
@@ -421,7 +423,7 @@
                       <span class="app-label">Settings</span>
                     </div>
 
-                    <!-- 12. Safari (Compass Dial with Red/White Needle) -->
+                    <!-- 12. Safari -->
                     <div class="flex flex-col items-center space-y-1">
                       <div class="w-11 h-11 ios-squircle bg-white flex items-center justify-center shadow-lg border border-black/10 relative">
                         <div class="w-8 h-8 rounded-full border border-blue-500/40 flex items-center justify-center relative">
@@ -452,28 +454,24 @@
                 <div>
                   <div class="glass-dock rounded-3xl p-2 px-3 flex items-center justify-between mx-1 shadow-2xl">
                     
-                    <!-- Phone (Green + Phone Handset) -->
                     <div class="w-10 h-10 ios-squircle bg-[#34c759] flex items-center justify-center text-white shadow-md">
                       <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
                         <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
                       </svg>
                     </div>
 
-                    <!-- Messages (Green + Speech Bubble) -->
                     <div class="w-10 h-10 ios-squircle bg-[#34c759] flex items-center justify-center text-white shadow-md">
                       <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
                         <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
                       </svg>
                     </div>
 
-                    <!-- Music (Pink/Red Gradient + Eighth Note) -->
                     <div class="w-10 h-10 ios-squircle bg-gradient-to-b from-[#fc3c44] to-[#f92a54] flex items-center justify-center text-white shadow-md">
                       <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
                         <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
                       </svg>
                     </div>
 
-                    <!-- Files (Blue Folder Icon) -->
                     <div class="w-10 h-10 ios-squircle bg-gradient-to-b from-[#0a84ff] to-[#0051a8] flex items-center justify-center text-white shadow-md">
                       <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
                         <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
@@ -671,7 +669,7 @@
     </div>
   </footer>
 
-  <!-- Scroll Animation Engine with Dynamic Viewport Auto-Scaling -->
+  <!-- Scroll Animation Engine with Centering & Backface Culling -->
   <script>
     lucide.createIcons();
 
@@ -697,33 +695,41 @@
       progressBar.style.width = `${progress * 100}%`;
       progressPercent.textContent = `${Math.round(progress * 100)}% Unfolded`;
 
-      // Dynamic viewport auto-scale: guarantees 580px unfolded chassis fits any mobile display
+      // Dynamic viewport auto-scale
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
       let baseScale = 0.95;
 
       if (viewportWidth < 640) {
-        // Fit 580px width inside mobile screen width with safe margins
         baseScale = Math.min(0.85, (viewportWidth - 32) / 600);
       } else if (viewportHeight < 750) {
-        // Handle short desktop or landscape viewports
         baseScale = Math.min(0.95, (viewportHeight - 200) / 620);
       }
 
-      // 3D rotations & flap unfold
-      const flapAngle = (1 - progress) * -178;
-      const rigRotateY = (1 - progress) * -18;
-      const rigRotateX = (1 - progress) * 8;
+      // Smooth fold angle from closed (+178deg behind) to open (0deg flat)
+      // Folding behind ensures the cover screen remains clean and centered in front without mirrored backface artifacts
+      const flapAngle = (1 - progress) * 178;
+      const rigRotateY = (1 - progress) * -16;
+      const rigRotateX = (1 - progress) * 6;
       const rigScale = baseScale + (progress * (baseScale * 0.08));
+      
+      // Center the single folded phone at progress = 0, glide to center the full canvas at progress = 1
+      const centerShift = (1 - progress) * 142 * baseScale;
 
-      phoneRig.style.transform = `rotateX(${rigRotateX}deg) rotateY(${rigRotateY}deg) scale(${rigScale})`;
+      phoneRig.style.transform = `translateX(${centerShift}px) rotateX(${rigRotateX}deg) rotateY(${rigRotateY}deg) scale(${rigScale})`;
       rightChassis.style.transform = `rotateY(${flapAngle}deg)`;
 
-      // Dynamic spine thickness
-      if (progress > 0.05) {
+      // Dynamic spine thickness and right chassis visibility
+      if (progress > 0.06) {
         hingeSpine.style.width = '10px';
+        hingeSpine.style.opacity = '1';
+        rightChassis.style.opacity = '1';
+        rightChassis.style.pointerEvents = 'auto';
       } else {
-        hingeSpine.style.width = '4px';
+        hingeSpine.style.width = '0px';
+        hingeSpine.style.opacity = '0';
+        rightChassis.style.opacity = '0';
+        rightChassis.style.pointerEvents = 'none';
       }
 
       // Crossfade screen states
