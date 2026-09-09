@@ -1,6 +1,25 @@
+To bring the page to the standard of Apple’s official flagship showcases (like the iPhone 17 Pro and Vision Pro pages), two structural upgrades are required:
+
+1. **Scroll-Driven 3D Scrollytelling:** Apple does not rely on static picture galleries. They place the device inside a `position: sticky` viewport pinned within a tall container (e.g., `250vh` to `300vh`). As you scroll, JavaScript calculates your exact progress between `0.0` and `1.0` and scrubs 3D CSS transforms (`perspective`, `rotateY`, `scale3d`, and flap rotation), physically unfolding the phone as you move down the page.
+2. **True iOS System UI:** The screen graphics need authentic Apple design tokens: the exact SF-style `9:41` lockscreen typography, a vector-rendered Dynamic Island with sensor apertures, a true iOS status bar (cellular signal bars, 5G glyph, battery pill with percentage), realistic iOS app squircles with subtle drop shadows, a frosted glass floating dock, and a Live Activity media widget.
+
+Here is the walkthrough and the complete, upgraded `index.html` file that replaces the previous mockup.
+
+---
+
+### Key Architectural Changes
+
+* **Hardware Chassis with 3D Origin:** The right panel now uses `transform-style: preserve-3d` with `transform-origin: left center`. When closed, it folds forward in 3D space; as you scroll, it swings open flat to 180 degrees.
+* **Scroll-Bound Event Listener:** A passive scroll listener measures your position inside the `#hero-scroll-track` container and interpolates the fold angle, device rotation, and screen content crossfades directly against scroll distance. A fallback interactive slider/toggle is also included.
+* **Authentic iOS 19/20 Springboard & Lockscreen:** The outer display renders an authentic lock screen with Live Activities (Now Playing widget and notifications), while the unfolded inner display renders a dual-pane iPadOS/DuoOS layout with native-looking iOS icon grids and a floating Liquid Glass dock.
+
+---
+
+### Upgraded `index.html`
+
 ```html
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth bg-black text-[#f5f5f7]">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,11 +32,10 @@
         extend: {
           colors: {
             appleBlack: '#000000',
-            appleCard: '#0d0d0f',
-            appleBorder: '#262626',
+            appleCard: '#0e0e11',
+            appleBorder: '#232326',
             appleMuted: '#86868b',
             appleBlue: '#2997ff',
-            appleBlueHover: '#0071e3',
           },
           fontFamily: {
             sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'Inter', 'sans-serif'],
@@ -33,384 +51,463 @@
       -webkit-font-smoothing: antialiased;
     }
     .frosted-nav {
-      background: rgba(0, 0, 0, 0.72);
+      background: rgba(0, 0, 0, 0.78);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
     }
-    .device-shadow {
-      box-shadow: 0 25px 70px -15px rgba(255, 255, 255, 0.04), 0 0 40px rgba(41, 151, 255, 0.08);
+    .perspective-container {
+      perspective: 1400px;
+      perspective-origin: 50% 50%;
     }
-    .hinge-shadow {
-      box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.95);
+    .preserve-3d {
+      transform-style: preserve-3d;
+    }
+    .ios-squircle {
+      border-radius: 22.5%;
+    }
+    .glass-dock {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .ios-wallpaper {
+      background: radial-gradient(circle at 80% 20%, #4338ca 0%, #1e1b4b 35%, #050508 75%);
+    }
+    .ios-lock-wallpaper {
+      background: radial-gradient(circle at 50% 30%, #312e81 0%, #0f172a 45%, #000000 85%);
     }
   </style>
 </head>
-<body class="bg-black text-[#f5f5f7] overflow-x-hidden selection:bg-appleBlue/30 selection:text-white">
+<body class="selection:bg-appleBlue/30 selection:text-white">
 
   <!-- Apple Global Navigation -->
   <header class="fixed top-0 left-0 w-full z-50">
-    <nav class="frosted-nav border-b border-[#262626]/60 transition-all duration-300">
+    <nav class="frosted-nav border-b border-[#232326]/80">
       <div class="max-w-[1024px] mx-auto px-6 h-11 flex items-center justify-between text-xs text-[#86868b]">
         <a href="#" class="text-[#f5f5f7] hover:opacity-70 transition-opacity">
           <svg class="w-4 h-4 fill-current" viewBox="0 0 170 170">
             <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.04-7.7-7.77-12-14.19-6.3-9.44-11.45-20.73-15.46-33.86-4-13.13-6.01-25.29-6.01-36.48 0-16.1 4.15-29.28 12.45-39.54 8.3-10.26 18.66-15.49 31.08-15.69 4.35 0 9.29 1.25 14.82 3.75 5.53 2.5 9.3 3.86 11.31 4.08 1.8.22 5.58-.99 11.35-3.63 5.77-2.64 10.74-3.84 14.91-3.6 13.9.78 24.89 5.86 32.96 15.24-11.85 7.18-17.65 17.15-17.41 29.9.24 9.94 4.14 18.23 11.7 24.86 7.56 6.63 16.53 10.36 26.92 11.19-2.44 7.42-5.71 15.34-9.81 23.77zM119.22 31.84c0-7.72 2.76-14.98 8.28-21.78 5.52-6.8 12.35-10.82 20.48-12.06.22 1.34.33 2.57.33 3.69 0 7.5-2.91 14.73-8.73 21.69-5.82 6.96-12.82 10.98-21.01 12.06-.22-1.12-.35-2.32-.35-3.6z"/>
           </svg>
         </a>
-        <a href="#" class="hidden md:inline hover:text-[#f5f5f7] transition-colors">Store</a>
-        <a href="#" class="hidden md:inline hover:text-[#f5f5f7] transition-colors">Mac</a>
-        <a href="#" class="hidden md:inline hover:text-[#f5f5f7] transition-colors">iPad</a>
-        <a href="#" class="hidden md:inline text-[#f5f5f7] transition-colors">iPhone</a>
-        <a href="#" class="hidden md:inline hover:text-[#f5f5f7] transition-colors">Watch</a>
-        <a href="#" class="hidden md:inline hover:text-[#f5f5f7] transition-colors">Vision</a>
-        <a href="#" class="hidden md:inline hover:text-[#f5f5f7] transition-colors">AirPods</a>
-        <a href="#" class="hidden md:inline hover:text-[#f5f5f7] transition-colors">TV &amp; Home</a>
-        <a href="#" class="hidden md:inline hover:text-[#f5f5f7] transition-colors">Entertainment</a>
-        <a href="#" class="hidden md:inline hover:text-[#f5f5f7] transition-colors">Support</a>
+        <a href="#" class="hidden md:inline hover:text-[#f5f5f7]">Store</a>
+        <a href="#" class="hidden md:inline hover:text-[#f5f5f7]">Mac</a>
+        <a href="#" class="hidden md:inline hover:text-[#f5f5f7]">iPad</a>
+        <a href="#" class="hidden md:inline text-white">iPhone</a>
+        <a href="#" class="hidden md:inline hover:text-[#f5f5f7]">Watch</a>
+        <a href="#" class="hidden md:inline hover:text-[#f5f5f7]">Vision</a>
+        <a href="#" class="hidden md:inline hover:text-[#f5f5f7]">AirPods</a>
+        <a href="#" class="hidden md:inline hover:text-[#f5f5f7]">Support</a>
         <div class="flex items-center space-x-6">
-          <button class="hover:text-[#f5f5f7] transition-colors"><i data-lucide="search" class="w-3.5 h-3.5"></i></button>
-          <button class="hover:text-[#f5f5f7] transition-colors"><i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i></button>
+          <button class="hover:text-[#f5f5f7]"><i data-lucide="search" class="w-3.5 h-3.5"></i></button>
+          <button class="hover:text-[#f5f5f7]"><i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i></button>
         </div>
       </div>
     </nav>
 
-    <!-- Product Sticky Sub-nav -->
-    <div class="frosted-nav border-b border-[#262626]">
+    <!-- Sub-nav -->
+    <div class="frosted-nav border-b border-[#232326]">
       <div class="max-w-[1024px] mx-auto px-6 h-12 flex items-center justify-between">
         <div class="flex items-center space-x-2">
           <span class="font-semibold text-lg tracking-tight text-white">iPhone Duo</span>
-          <span class="text-[10px] uppercase font-bold tracking-widest bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text px-2 py-0.5 rounded-full border border-blue-500/30">New</span>
+          <span class="text-[10px] uppercase font-bold tracking-wider bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text px-2 py-0.5 rounded-full border border-blue-500/30">New</span>
         </div>
         <div class="flex items-center space-x-6 text-xs">
-          <a href="#overview" class="hidden sm:inline text-white/90 hover:text-white">Overview</a>
-          <a href="#engineering" class="hidden sm:inline text-[#86868b] hover:text-white transition-colors">Hinge Architecture</a>
-          <a href="#duoos" class="hidden sm:inline text-[#86868b] hover:text-white transition-colors">DuoOS</a>
-          <a href="#compare" class="hidden sm:inline text-[#86868b] hover:text-white transition-colors">Specs</a>
+          <a href="#overview" class="text-white/90">Overview</a>
+          <a href="#engineering" class="text-[#86868b] hover:text-white">Titanium Hinge</a>
+          <a href="#duoos" class="text-[#86868b] hover:text-white">DuoOS</a>
+          <a href="#compare" class="text-[#86868b] hover:text-white">Specs</a>
           <button class="bg-[#0071e3] hover:bg-[#0077ed] text-white px-3.5 py-1 rounded-full font-medium transition-colors">Pre-order</button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Section 1: Hero Section -->
-  <section id="overview" class="pt-36 pb-24 px-6 relative flex flex-col items-center text-center">
-    <div class="max-w-4xl mx-auto space-y-4">
-      <span class="text-xs uppercase tracking-widest font-semibold text-appleBlue">Next Era Engineering</span>
-      <h1 class="text-5xl sm:text-7xl md:text-8xl font-bold tracking-tight bg-gradient-to-b from-white via-white/95 to-white/40 text-transparent bg-clip-text">
-        Two worlds.<br/>One seamless form.
-      </h1>
-      <p class="text-xl sm:text-2xl text-[#86868b] max-w-2xl mx-auto font-normal">
-        The canvas folds. The power multiplies. Pocket-sized agility meets an expansive 7.8-inch ProMotion workstation.
-      </p>
-      <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
-        <span class="text-white/80">Available 10.16 &bull; From $1,999 or $83.29/mo. for 24 mo.</span>
-        <a href="#compare" class="text-appleBlue hover:underline flex items-center gap-1 font-medium">Explore specs <i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+  <!-- Section 1: Scroll-Scrubbed Sticky Hero Stage -->
+  <div id="hero-scroll-track" class="relative h-[280vh] w-full">
+    <div class="sticky top-0 h-screen w-full flex flex-col items-center justify-between pt-28 pb-8 px-4 overflow-hidden">
+      
+      <!-- Dynamic Scroll Headlines -->
+      <div class="text-center z-20 space-y-2 max-w-3xl pointer-events-none transition-all duration-300">
+        <span class="text-xs uppercase tracking-widest font-semibold text-appleBlue">iPhone Duo</span>
+        <h1 id="hero-headline" class="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight bg-gradient-to-b from-white via-white/95 to-white/40 text-transparent bg-clip-text transition-all duration-300">
+          Folded agility.
+        </h1>
+        <p id="hero-subtext" class="text-base sm:text-xl text-[#86868b] font-normal transition-all duration-300">
+          Scroll to unfold the 7.8-inch continuous ProMotion canvas.
+        </p>
       </div>
-    </div>
 
-    <!-- Interactive Fold/Unfold State Switcher -->
-    <div class="mt-10 flex items-center p-1 bg-[#161617] border border-[#262626] rounded-full text-xs font-medium z-20">
-      <button id="btn-folded" onclick="setDeviceMode('folded')" class="px-5 py-2 rounded-full transition-all duration-300 bg-white text-black shadow-sm flex items-center gap-2">
-        <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
-        <span>Compact Mode (5.5”)</span>
-      </button>
-      <button id="btn-unfolded" onclick="setDeviceMode('unfolded')" class="px-5 py-2 rounded-full transition-all duration-300 text-[#86868b] hover:text-white flex items-center gap-2">
-        <i data-lucide="tablet" class="w-3.5 h-3.5"></i>
-        <span>Unfolded Canvas (7.8”)</span>
-      </button>
-    </div>
-
-    <!-- Hardware Interactive Vector/CSS Frame -->
-    <div class="mt-14 w-full flex flex-col items-center justify-center min-h-[580px]">
-      <div id="device-wrapper" class="relative transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] w-[275px] h-[540px] device-shadow rounded-[46px] p-2.5 bg-gradient-to-b from-[#3a3a3c] via-[#1c1c1e] to-[#2c2c2e] border border-[#3a3a3c]/80 flex">
+      <!-- 3D Transform Viewport -->
+      <div class="relative perspective-container w-full flex-1 flex items-center justify-center">
         
-        <!-- Left Panel (Visible in both or acting as folded front) -->
-        <div id="panel-left" class="relative w-full h-full bg-black rounded-[38px] overflow-hidden border border-white/10 flex flex-col transition-all duration-700">
+        <!-- Center Master Rig -->
+        <div id="phone-rig" class="relative preserve-3d transition-transform duration-100 ease-out flex items-center justify-center" style="transform: rotateX(8deg) rotateY(-18deg) scale(0.95);">
           
-          <!-- Front Cover UI (Compact Mode) -->
-          <div id="ui-compact" class="absolute inset-0 p-6 flex flex-col justify-between transition-opacity duration-500 opacity-100">
-            <!-- Dynamic Island -->
-            <div class="w-full flex justify-center">
-              <div class="w-24 h-6 bg-black border border-[#262626] rounded-full flex items-center justify-between px-2.5 shadow-inner">
-                <div class="w-2 h-2 rounded-full bg-[#1c1c1e]"></div>
-                <div class="w-2.5 h-2.5 rounded-full bg-blue-900/60 flex items-center justify-center">
-                  <div class="w-1 h-1 rounded-full bg-blue-400"></div>
-                </div>
-              </div>
-            </div>
+          <!-- LEFT / COVER CHASSIS -->
+          <div id="left-chassis" class="relative w-[280px] h-[580px] bg-[#1a1a1d] rounded-[48px] p-2.5 border border-[#3e3e42] shadow-[0_25px_60px_rgba(0,0,0,0.85)] z-20 flex-shrink-0">
+            
+            <!-- Side Power / Touch ID Button -->
+            <div class="absolute -left-[3.5px] top-28 w-[3.5px] h-14 bg-gradient-to-b from-[#3a3a3c] via-[#555] to-[#3a3a3c] rounded-l-sm"></div>
+            <!-- Volume Rockers -->
+            <div class="absolute -right-[3.5px] top-24 w-[3.5px] h-12 bg-gradient-to-b from-[#3a3a3c] via-[#555] to-[#3a3a3c] rounded-r-sm"></div>
+            <div class="absolute -right-[3.5px] top-40 w-[3.5px] h-12 bg-gradient-to-b from-[#3a3a3c] via-[#555] to-[#3a3a3c] rounded-r-sm"></div>
 
-            <!-- Lock Screen Content -->
-            <div class="text-center my-auto space-y-1">
-              <div class="text-xs uppercase tracking-widest text-[#86868b] font-medium">Wednesday, September 9</div>
-              <div class="text-6xl font-light tracking-tight text-white">9:41</div>
-              <div class="mt-4 inline-flex items-center gap-2 bg-[#1c1c1e]/90 border border-[#262626] rounded-2xl px-3 py-1.5 text-xs text-left">
-                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-appleBlue"></i>
+            <!-- Left Screen Bezel Container -->
+            <div class="relative w-full h-full rounded-[40px] overflow-hidden bg-black border border-black flex flex-col justify-between">
+              
+              <!-- Authenticated Cover Lock Screen UI -->
+              <div id="lockscreen-ui" class="absolute inset-0 ios-lock-wallpaper p-6 flex flex-col justify-between transition-opacity duration-500 opacity-100 z-10">
+                
+                <!-- Status Bar & Dynamic Island -->
                 <div>
-                  <div class="font-semibold text-white/90 text-[11px]">Keynote Live</div>
-                  <div class="text-[10px] text-[#86868b]">Steve Jobs Theater &bull; Streaming</div>
+                  <div class="flex items-center justify-between text-[11px] font-semibold tracking-tight text-white/90 px-1 pt-1">
+                    <span>9:41</span>
+                    <div class="flex items-center space-x-1.5 text-white/80">
+                      <!-- 4-bar cellular signal -->
+                      <div class="flex items-end space-x-[1.5px] h-2.5">
+                        <div class="w-[2.5px] h-1 bg-white rounded-[0.5px]"></div>
+                        <div class="w-[2.5px] h-1.5 bg-white rounded-[0.5px]"></div>
+                        <div class="w-[2.5px] h-2 bg-white rounded-[0.5px]"></div>
+                        <div class="w-[2.5px] h-2.5 bg-white rounded-[0.5px]"></div>
+                      </div>
+                      <span class="text-[10px] font-bold">5G</span>
+                      <!-- Battery glyph -->
+                      <div class="w-5 h-2.5 border border-white/70 rounded-[3px] p-[1px] flex items-center">
+                        <div class="w-full h-full bg-white rounded-[1.5px]"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Dynamic Island -->
+                  <div class="mt-2 flex justify-center">
+                    <div class="w-28 h-7 bg-black rounded-full border border-[#222] flex items-center justify-between px-2.5 shadow-md">
+                      <div class="flex items-center space-x-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse"></div>
+                        <span class="text-[9px] font-medium text-white/80">Keynote</span>
+                      </div>
+                      <div class="w-2.5 h-2.5 rounded-full bg-[#111] border border-blue-900/60 flex items-center justify-center">
+                        <div class="w-1 h-1 rounded-full bg-blue-500"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Clock & Lock Date -->
+                <div class="text-center my-auto -mt-6">
+                  <div class="text-xs uppercase font-semibold tracking-wider text-indigo-200/80">Wednesday, September 9</div>
+                  <div class="text-6xl font-semibold tracking-tight text-white mt-1">9:41</div>
+
+                  <!-- iOS Live Activity Widget: Now Playing -->
+                  <div class="mt-8 bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl p-3 text-left shadow-2xl">
+                    <div class="flex items-center space-x-3">
+                      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow">
+                        <i data-lucide="music" class="w-5 h-5"></i>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="text-xs font-semibold text-white truncate">Continuum (24-bit Lossless)</div>
+                        <div class="text-[11px] text-white/60 truncate">Apple Special Event Keynote</div>
+                      </div>
+                      <div class="flex items-center space-x-2 text-white/80 pr-1">
+                        <i data-lucide="play" class="w-3.5 h-3.5 fill-white"></i>
+                        <i data-lucide="fast-forward" class="w-3.5 h-3.5 fill-white"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Lock Screen Bottom Shortcuts -->
+                <div class="flex justify-between items-center px-1">
+                  <div class="w-11 h-11 rounded-full bg-black/40 backdrop-blur-lg border border-white/15 flex items-center justify-center text-white">
+                    <i data-lucide="flashlight" class="w-4 h-4"></i>
+                  </div>
+                  <div class="w-24 h-1 bg-white/40 rounded-full"></div>
+                  <div class="w-11 h-11 rounded-full bg-black/40 backdrop-blur-lg border border-white/15 flex items-center justify-center text-white">
+                    <i data-lucide="camera" class="w-4 h-4"></i>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Cover Quick Actions -->
-            <div class="flex justify-between items-center px-2">
-              <div class="w-10 h-10 rounded-full bg-[#1c1c1e]/80 border border-[#262626] flex items-center justify-center text-white">
-                <i data-lucide="flashlight" class="w-4 h-4"></i>
-              </div>
-              <div class="w-16 h-1 bg-white/40 rounded-full"></div>
-              <div class="w-10 h-10 rounded-full bg-[#1c1c1e]/80 border border-[#262626] flex items-center justify-center text-white">
-                <i data-lucide="camera" class="w-4 h-4"></i>
-              </div>
-            </div>
-          </div>
-
-          <!-- Unfolded Left Canvas Pane (App 1) -->
-          <div id="ui-unfolded-left" class="absolute inset-0 p-5 flex flex-col justify-between transition-opacity duration-500 opacity-0 pointer-events-none bg-[#0a0a0c]">
-            <div>
-              <div class="flex items-center justify-between border-b border-[#262626] pb-3 mb-3">
-                <span class="text-xs font-semibold tracking-wide text-[#86868b]">NOTES &bull; WORKSPACE</span>
-                <span class="text-[10px] bg-appleBlue/20 text-appleBlue px-2 py-0.5 rounded-full font-mono">DuoOS</span>
-              </div>
-              <h4 class="text-base font-semibold text-white">Keynote Key Takeaways</h4>
-              <p class="text-xs text-[#86868b] mt-2 leading-relaxed">
-                1. Dual-hinge titanium structural core removes micro-creasing.<br/>
-                2. TSMC 2nm A20 Pro chip doubles sustained thermal efficiency.<br/>
-                3. Apple Pencil Pro snap-charging directly along spine edge.
-              </p>
-            </div>
-            <div class="p-2.5 rounded-xl bg-[#161617] border border-[#262626] flex items-center gap-3">
-              <i data-lucide="edit-3" class="w-4 h-4 text-appleBlue"></i>
-              <span class="text-xs text-white/80 font-medium">Apple Pencil Pro connected</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Titanium Center Micro-Spine (Hidden in compact, reveals in unfolded) -->
-        <div id="center-hinge" class="w-0 overflow-hidden h-full flex flex-col justify-between items-center transition-all duration-700 bg-gradient-to-r from-[#1c1c1e] via-[#3a3a3c] to-[#1c1c1e] hinge-shadow">
-          <div class="w-[1px] h-full bg-white/10"></div>
-        </div>
-
-        <!-- Right Panel (Expands when unfolded) -->
-        <div id="panel-right" class="w-0 overflow-hidden h-full bg-[#0d0d11] rounded-[38px] border-0 border-white/10 flex flex-col justify-between p-0 transition-all duration-700 opacity-0">
-          <div class="w-full p-5 flex flex-col justify-between h-full">
-            <div>
-              <div class="flex items-center justify-between border-b border-[#262626] pb-3 mb-3">
-                <span class="text-xs font-semibold tracking-wide text-[#86868b]">SAFARI CANVAS</span>
-                <i data-lucide="maximize-2" class="w-3.5 h-3.5 text-[#86868b]"></i>
-              </div>
-              <div class="rounded-xl border border-[#262626] bg-[#161617] p-4 text-center space-y-2">
-                <div class="w-10 h-10 mx-auto rounded-full bg-appleBlue/20 text-appleBlue flex items-center justify-center">
-                  <i data-lucide="layout-grid" class="w-5 h-5"></i>
+              <!-- Inner Canvas Left Half UI (Appears when unfolded) -->
+              <div id="unfolded-left-ui" class="absolute inset-0 ios-wallpaper p-5 flex flex-col justify-between transition-opacity duration-500 opacity-0 z-0">
+                <!-- Status bar -->
+                <div class="flex items-center justify-between text-[11px] font-semibold text-white/80">
+                  <span>9:41</span>
+                  <div class="flex items-center space-x-1">
+                    <span class="text-[9px] bg-white/10 px-1.5 py-0.5 rounded font-mono">DuoOS 20</span>
+                  </div>
                 </div>
-                <div class="text-xs font-semibold text-white">Full Ultra-Wide View</div>
-                <div class="text-[11px] text-[#86868b]">Split-drag apps seamlessly across the 7.8" ProMotion 120Hz canvas.</div>
+
+                <!-- Multitasking Window: Notes & Freeform -->
+                <div class="flex-1 mt-4 bg-black/40 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between text-xs text-[#86868b] border-b border-white/10 pb-2 mb-3">
+                      <span class="font-medium text-white/90 flex items-center gap-1.5">
+                        <i data-lucide="file-text" class="w-3.5 h-3.5 text-appleBlue"></i>
+                        Keynote Architecture Notes
+                      </span>
+                      <i data-lucide="more-horizontal" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <p class="text-xs text-white/80 leading-relaxed font-normal">
+                      &bull; <strong>7.8” Liquid Retina XDR:</strong> Folded crease depth under 0.01mm.<br/>
+                      &bull; <strong>TSMC 2nm A20 Pro:</strong> Dual motherboard thermal distribution.<br/>
+                      &bull; <strong>Haptic Spine:</strong> Apple Pencil Pro snaps and pairs automatically along the titanium edge.
+                    </p>
+                  </div>
+                  <div class="flex items-center justify-between text-[11px] text-white/60 pt-2 border-t border-white/5">
+                    <span>1,420 words &bull; Edited just now</span>
+                    <span class="text-appleBlue font-medium">Pencil Canvas Active</span>
+                  </div>
+                </div>
+
+                <div class="w-full flex justify-center pt-2">
+                  <div class="w-20 h-1 bg-white/30 rounded-full"></div>
+                </div>
               </div>
-            </div>
-            <div class="w-full flex justify-center">
-              <div class="w-20 h-1 bg-white/30 rounded-full"></div>
+
             </div>
           </div>
+
+          <!-- ZERO-CREASE HINGE SPINE -->
+          <div id="hinge-spine" class="w-[7px] h-[560px] bg-gradient-to-r from-[#1b1b1d] via-[#434347] to-[#1b1b1d] shadow-inner flex-shrink-0 z-30 transition-all duration-300"></div>
+
+          <!-- RIGHT / UNFOLDING CHASSIS -->
+          <div id="right-chassis" class="relative w-[280px] h-[580px] bg-[#1a1a1d] rounded-[48px] p-2.5 border border-[#3e3e42] shadow-[0_25px_60px_rgba(0,0,0,0.85)] z-10 flex-shrink-0 origin-left preserve-3d transition-transform duration-100 ease-out" style="transform: rotateY(0deg);">
+            
+            <div class="relative w-full h-full rounded-[40px] overflow-hidden bg-black border border-black flex flex-col justify-between">
+              
+              <!-- Inner Canvas Right Half UI (Springboard iOS Grid & Floating Dock) -->
+              <div class="absolute inset-0 ios-wallpaper p-5 flex flex-col justify-between">
+                
+                <!-- Status bar top right -->
+                <div class="flex items-center justify-end text-[11px] font-semibold text-white/80 space-x-2">
+                  <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+                  <div class="w-5 h-2.5 border border-white/70 rounded-[3px] p-[1px] flex items-center">
+                    <div class="w-full h-full bg-white rounded-[1.5px]"></div>
+                  </div>
+                </div>
+
+                <!-- True iOS App Icon Grid -->
+                <div class="grid grid-cols-4 gap-3.5 my-auto px-1">
+                  <!-- Photos -->
+                  <div class="flex flex-col items-center space-y-1">
+                    <div class="w-11 h-11 ios-squircle bg-white flex items-center justify-center shadow-lg">
+                      <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-400 via-rose-500 to-cyan-400"></div>
+                    </div>
+                    <span class="text-[10px] text-white/90">Photos</span>
+                  </div>
+                  <!-- Camera -->
+                  <div class="flex flex-col items-center space-y-1">
+                    <div class="w-11 h-11 ios-squircle bg-gradient-to-b from-[#8e8e93] to-[#48484a] flex items-center justify-center shadow-lg text-white">
+                      <i data-lucide="camera" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-[10px] text-white/90">Camera</span>
+                  </div>
+                  <!-- Safari -->
+                  <div class="flex flex-col items-center space-y-1">
+                    <div class="w-11 h-11 ios-squircle bg-white flex items-center justify-center shadow-lg text-appleBlue">
+                      <i data-lucide="compass" class="w-6 h-6"></i>
+                    </div>
+                    <span class="text-[10px] text-white/90">Safari</span>
+                  </div>
+                  <!-- Mail -->
+                  <div class="flex flex-col items-center space-y-1">
+                    <div class="w-11 h-11 ios-squircle bg-gradient-to-b from-[#2997ff] to-[#0071e3] flex items-center justify-center shadow-lg text-white">
+                      <i data-lucide="mail" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-[10px] text-white/90">Mail</span>
+                  </div>
+                  <!-- Maps -->
+                  <div class="flex flex-col items-center space-y-1">
+                    <div class="w-11 h-11 ios-squircle bg-gradient-to-br from-[#30d158] to-[#0a84ff] flex items-center justify-center shadow-lg text-white">
+                      <i data-lucide="map-pin" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-[10px] text-white/90">Maps</span>
+                  </div>
+                  <!-- Settings -->
+                  <div class="flex flex-col items-center space-y-1">
+                    <div class="w-11 h-11 ios-squircle bg-gradient-to-b from-[#8e8e93] to-[#2c2c2e] flex items-center justify-center shadow-lg text-white">
+                      <i data-lucide="settings" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-[10px] text-white/90">Settings</span>
+                  </div>
+                  <!-- Health -->
+                  <div class="flex flex-col items-center space-y-1">
+                    <div class="w-11 h-11 ios-squircle bg-white flex items-center justify-center shadow-lg text-rose-500">
+                      <i data-lucide="heart" class="w-5 h-5 fill-rose-500"></i>
+                    </div>
+                    <span class="text-[10px] text-white/90">Health</span>
+                  </div>
+                  <!-- App Store -->
+                  <div class="flex flex-col items-center space-y-1">
+                    <div class="w-11 h-11 ios-squircle bg-gradient-to-b from-[#0a84ff] to-[#0051a8] flex items-center justify-center shadow-lg text-white font-bold text-base">
+                      A
+                    </div>
+                    <span class="text-[10px] text-white/90">Store</span>
+                  </div>
+                </div>
+
+                <!-- Floating Liquid Glass iOS Dock -->
+                <div class="glass-dock rounded-3xl p-2 px-3 flex items-center justify-around mx-1 shadow-2xl">
+                  <div class="w-10 h-10 ios-squircle bg-[#34c759] flex items-center justify-center text-white shadow">
+                    <i data-lucide="phone" class="w-4 h-4 fill-white"></i>
+                  </div>
+                  <div class="w-10 h-10 ios-squircle bg-[#007aff] flex items-center justify-center text-white shadow">
+                    <i data-lucide="message-circle" class="w-4 h-4 fill-white"></i>
+                  </div>
+                  <div class="w-10 h-10 ios-squircle bg-gradient-to-b from-[#fa233b] to-[#fb5c74] flex items-center justify-center text-white shadow">
+                    <i data-lucide="play-circle" class="w-4 h-4 fill-white"></i>
+                  </div>
+                  <div class="w-10 h-10 ios-squircle bg-white flex items-center justify-center text-appleBlue shadow">
+                    <i data-lucide="compass" class="w-5 h-5"></i>
+                  </div>
+                </div>
+
+                <div class="w-full flex justify-center">
+                  <div class="w-20 h-1 bg-white/30 rounded-full"></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
         </div>
 
       </div>
 
-      <!-- Real-time dynamic spec readout based on mode -->
-      <div class="mt-8 grid grid-cols-3 gap-6 max-w-lg text-center">
-        <div>
-          <div id="metric-diag" class="text-2xl font-bold tracking-tight text-white">5.5”</div>
-          <div class="text-[11px] text-[#86868b] uppercase tracking-wider mt-0.5 font-medium">Cover Display</div>
+      <!-- Scrolly Scrub Bar Indicator & Manual Button -->
+      <div class="z-20 w-full max-w-xs flex flex-col items-center space-y-2">
+        <div class="w-full bg-[#1c1c1e] h-1 rounded-full overflow-hidden border border-white/5">
+          <div id="scroll-progress-bar" class="w-0 h-full bg-appleBlue transition-all duration-75"></div>
         </div>
-        <div>
-          <div id="metric-thick" class="text-2xl font-bold tracking-tight text-white">9.6mm</div>
-          <div class="text-[11px] text-[#86868b] uppercase tracking-wider mt-0.5 font-medium">Folded Thickness</div>
+        <div class="flex items-center justify-between w-full text-[11px] text-[#86868b]">
+          <span>Folded (5.5”)</span>
+          <span id="progress-percent" class="font-mono text-white">0% Unfolded</span>
+          <span>Canvas (7.8”)</span>
         </div>
-        <div>
-          <div id="metric-res" class="text-2xl font-bold tracking-tight text-white">2,200 nits</div>
-          <div class="text-[11px] text-[#86868b] uppercase tracking-wider mt-0.5 font-medium">Peak Brightness</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Section 2: Engineering & Hinge Deep Dive -->
+  <section id="engineering" class="py-28 px-6 border-t border-[#232326] bg-[#050507]">
+    <div class="max-w-[1024px] mx-auto">
+      <div class="text-center max-w-2xl mx-auto space-y-3 mb-20">
+        <span class="text-xs uppercase tracking-widest font-semibold text-appleBlue">Titanium Zero-Crease Micro-Gears</span>
+        <h2 class="text-4xl sm:text-6xl font-bold tracking-tight text-white">Engineering the vanishing line.</h2>
+        <p class="text-lg text-[#86868b]">Grade 5 titanium synchro-gears draw the flexible display into an internal raindrop radius, removing surface fatigue.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="p-8 rounded-3xl bg-appleCard border border-appleBorder space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-[#1a1a1d] border border-white/10 flex items-center justify-center text-appleBlue">
+            <i data-lucide="layers" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-2xl font-semibold text-white">Raindrop Cavity Hinge</h3>
+          <p class="text-sm text-[#86868b] leading-relaxed">
+            Unlike traditional radius bends that pinch glass under acute tension, the Duo's titanium synchronized gears retract inward as the device closes, cradling the panel in a relaxed raindrop curvature.
+          </p>
+          <div class="pt-4 border-t border-[#232326] text-xs font-mono text-appleBlue">500,000 Laboratory Cycles Tested</div>
+        </div>
+
+        <div class="p-8 rounded-3xl bg-appleCard border border-appleBorder space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-[#1a1a1d] border border-white/10 flex items-center justify-center text-appleBlue">
+            <i data-lucide="cpu" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-2xl font-semibold text-white">TSMC 2nm A20 Pro</h3>
+          <p class="text-sm text-[#86868b] leading-relaxed">
+            Split across both titanium chassis halves, dual logic boards communicate across high-speed micro-ribbons through the hinge spine, providing twice the cooling surface area of any previous iPhone.
+          </p>
+          <div class="pt-4 border-t border-[#232326] text-xs font-mono text-appleBlue">35% Cooler Sustained Gaming</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Section 2: Engineering & Display Breakdown -->
-  <section id="engineering" class="py-24 px-6 border-t border-[#262626] bg-[#050505]">
+  <!-- Section 3: DuoOS Workflow -->
+  <section id="duoos" class="py-28 px-6 border-t border-[#232326] bg-black">
     <div class="max-w-[1024px] mx-auto">
-      <div class="text-center max-w-3xl mx-auto space-y-3 mb-16">
-        <span class="text-xs uppercase tracking-widest font-semibold text-appleBlue">Titanium Zero-Crease Architecture</span>
-        <h2 class="text-4xl sm:text-6xl font-bold tracking-tight text-white">Precision without compromise.</h2>
-        <p class="text-lg text-[#86868b]">Every micron calibrated to bridge two halves into a single, flat, continuous horizon.</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Feature 1: The Zero-Crease Hinge -->
-        <div class="p-8 rounded-3xl bg-[#0d0d0f] border border-[#262626] flex flex-col justify-between group hover:border-[#3a3a3c] transition-all">
-          <div class="space-y-4">
-            <div class="w-12 h-12 rounded-2xl bg-neutral-900 border border-[#262626] flex items-center justify-center text-white">
-              <i data-lucide="layers" class="w-6 h-6 text-appleBlue"></i>
-            </div>
-            <h3 class="text-2xl font-semibold text-white">Zero-Crease Titanium Hinge</h3>
-            <p class="text-sm text-[#86868b] leading-relaxed">
-              Formed with Grade 5 aerospace titanium micro-gears, the dual-action hinge guides the flexible display into a gentle teardrop radius. The result: completely zero visible or tactile crease when locked flat at 180 degrees.
-            </p>
-          </div>
-          <div class="mt-8 pt-4 border-t border-[#262626] flex items-center justify-between text-xs text-white/90">
-            <span>Rated for 500,000 continuous folds</span>
-            <span class="font-mono text-appleBlue">10+ Years Durability</span>
-          </div>
-        </div>
-
-        <!-- Feature 2: Ultra-Thin Flexible Glass -->
-        <div class="p-8 rounded-3xl bg-[#0d0d0f] border border-[#262626] flex flex-col justify-between group hover:border-[#3a3a3c] transition-all">
-          <div class="space-y-4">
-            <div class="w-12 h-12 rounded-2xl bg-neutral-900 border border-[#262626] flex items-center justify-center text-white">
-              <i data-lucide="shield-check" class="w-6 h-6 text-appleBlue"></i>
-            </div>
-            <h3 class="text-2xl font-semibold text-white">Flexible Ceramic Shield</h3>
-            <p class="text-sm text-[#86868b] leading-relaxed">
-              Engineered with an atomic-scale nanoceramic matrix infused into flexible ultra-thin glass. 4x more resilient to punctures and micro-abrasions than first-generation foldable polymer substrates.
-            </p>
-          </div>
-          <div class="mt-8 pt-4 border-t border-[#262626] flex items-center justify-between text-xs text-white/90">
-            <span>0.03mm thickness profile</span>
-            <span class="font-mono text-appleBlue">ProMotion 1-120Hz</span>
-          </div>
-        </div>
-
-        <!-- Feature 3: 2nm A20 Pro -->
-        <div class="p-8 rounded-3xl bg-[#0d0d0f] border border-[#262626] flex flex-col justify-between group hover:border-[#3a3a3c] transition-all">
-          <div class="space-y-4">
-            <div class="w-12 h-12 rounded-2xl bg-neutral-900 border border-[#262626] flex items-center justify-center text-white">
-              <i data-lucide="cpu" class="w-6 h-6 text-appleBlue"></i>
-            </div>
-            <h3 class="text-2xl font-semibold text-white">A20 Pro &bull; TSMC 2nm</h3>
-            <p class="text-sm text-[#86868b] leading-relaxed">
-              The world's first commercial 2-nanometer platform. Featuring a 6-core high-efficiency CPU, neural ray-tracing GPU, and split-motherboard thermal distribution allowing both phone chassis halves to act as unified heat sinks.
-            </p>
-          </div>
-          <div class="mt-8 pt-4 border-t border-[#262626] flex items-center justify-between text-xs text-white/90">
-            <span>35% more power efficient</span>
-            <span class="font-mono text-appleBlue">48 TOPS Neural Engine</span>
-          </div>
-        </div>
-
-        <!-- Feature 4: Sapphire Touch ID Power Button -->
-        <div class="p-8 rounded-3xl bg-[#0d0d0f] border border-[#262626] flex flex-col justify-between group hover:border-[#3a3a3c] transition-all">
-          <div class="space-y-4">
-            <div class="w-12 h-12 rounded-2xl bg-neutral-900 border border-[#262626] flex items-center justify-center text-white">
-              <i data-lucide="fingerprint" class="w-6 h-6 text-appleBlue"></i>
-            </div>
-            <h3 class="text-2xl font-semibold text-white">Sapphire Power Button with Touch ID</h3>
-            <p class="text-sm text-[#86868b] leading-relaxed">
-              Instant capacitive authentication right on the lateral edge. Unlocks securely whether the device is closed in one hand, propped open in Tent Mode, or fully unfolded as an iPad-class workstation.
-            </p>
-          </div>
-          <div class="mt-8 pt-4 border-t border-[#262626] flex items-center justify-between text-xs text-white/90">
-            <span>Paired with Cover Face ID</span>
-            <span class="font-mono text-appleBlue">Instant Biometric Unlock</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section 3: DuoOS & Productivity -->
-  <section id="duoos" class="py-24 px-6 border-t border-[#262626] bg-black">
-    <div class="max-w-[1024px] mx-auto">
-      <div class="text-center max-w-2xl mx-auto space-y-3 mb-16">
-        <span class="text-xs uppercase tracking-widest font-semibold text-appleBlue">Software Redesigned</span>
-        <h2 class="text-4xl sm:text-6xl font-bold tracking-tight text-white">DuoOS. Double the flow.</h2>
-        <p class="text-lg text-[#86868b]">iOS versatility combined with iPadOS multi-window prowess.</p>
+      <div class="text-center max-w-2xl mx-auto space-y-3 mb-20">
+        <span class="text-xs uppercase tracking-widest font-semibold text-appleBlue">DuoOS Multitasking</span>
+        <h2 class="text-4xl sm:text-6xl font-bold tracking-tight text-white">Two apps. Zero friction.</h2>
+        <p class="text-lg text-[#86868b]">Work across two continuous displays or spread a single app into wide-angle workspace.</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="p-6 rounded-2xl bg-[#0d0d0f] border border-[#262626] space-y-3">
+        <div class="p-6 rounded-2xl bg-appleCard border border-appleBorder space-y-3">
           <div class="text-appleBlue text-lg font-semibold">Continuous App Handshake</div>
           <p class="text-xs text-[#86868b] leading-relaxed">
-            Begin drafting an email or viewing a spreadsheet on the 5.5" outer display. Unfold the phone, and the window seamlessly expands into full dual-pane layout without losing your typing cursor.
+            Start a FaceTime call on the cover screen. Unfold the device, and the call automatically shifts to the left quadrant while your shared Keynote deck opens on the right.
           </p>
         </div>
 
-        <div class="p-6 rounded-2xl bg-[#0d0d0f] border border-[#262626] space-y-3">
-          <div class="text-appleBlue text-lg font-semibold">Apple Pencil Pro Ready</div>
+        <div class="p-6 rounded-2xl bg-appleCard border border-appleBorder space-y-3">
+          <div class="text-appleBlue text-lg font-semibold">Magnetic Pencil Pro Dock</div>
           <p class="text-xs text-[#86868b] leading-relaxed">
-            Magnetically clamp Apple Pencil Pro directly to the titanium hinge edge. Take handwritten notes, sketch vector concepts, and sign contracts directly across the 7.8" unfolded display.
+            Apple Pencil Pro snaps flush against the titanium spine, pairing instantly for pressure-sensitive drawing, photo retouching, and quick handwritten notes.
           </p>
         </div>
 
-        <div class="p-6 rounded-2xl bg-[#0d0d0f] border border-[#262626] space-y-3">
-          <div class="text-appleBlue text-lg font-semibold">Stage Manager Duo</div>
+        <div class="p-6 rounded-2xl bg-appleCard border border-appleBorder space-y-3">
+          <div class="text-appleBlue text-lg font-semibold">Adaptive Flex Stand Mode</div>
           <p class="text-xs text-[#86868b] leading-relaxed">
-            Run two full-screen apps side-by-side with fluid drag-and-drop asset transfers, or slide a third utility app over the edge with intuitive three-finger swipe gestures.
+            Angle the hinge at 90 degrees on your desk. The bottom display instantly transforms into a full tactile keyboard and trackpad, while the top display presents your document.
           </p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Section 4: Spec & Lineup Comparison Grid -->
-  <section id="compare" class="py-24 px-6 border-t border-[#262626] bg-[#050505]">
+  <!-- Section 4: Flagship Spec Comparison -->
+  <section id="compare" class="py-28 px-6 border-t border-[#232326] bg-[#050507]">
     <div class="max-w-[1024px] mx-auto">
       <div class="text-center max-w-2xl mx-auto space-y-3 mb-16">
-        <span class="text-xs uppercase tracking-widest font-semibold text-appleBlue">Lineup Matrix</span>
-        <h2 class="text-4xl sm:text-6xl font-bold tracking-tight text-white">Which flagship is yours?</h2>
-        <p class="text-lg text-[#86868b]">Compare the transformative iPhone Duo with iPhone 18 Pro Max.</p>
+        <span class="text-xs uppercase tracking-widest font-semibold text-appleBlue">Specification Matrix</span>
+        <h2 class="text-4xl sm:text-6xl font-bold tracking-tight text-white">Compare flagships.</h2>
+        <p class="text-lg text-[#86868b]">Compare the transforming iPhone Duo with iPhone 18 Pro Max.</p>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm border-collapse">
           <thead>
-            <tr class="border-b border-[#262626]">
+            <tr class="border-b border-appleBorder">
               <th class="pb-6 font-medium text-[#86868b] w-1/3">Feature</th>
               <th class="pb-6 font-semibold text-white text-base w-1/3">
                 iPhone Duo
-                <span class="block text-xs font-normal text-appleBlue mt-0.5">Starting at $1,999</span>
+                <span class="block text-xs font-normal text-appleBlue mt-0.5">From $1,999</span>
               </th>
               <th class="pb-6 font-semibold text-white text-base w-1/3">
                 iPhone 18 Pro Max
-                <span class="block text-xs font-normal text-[#86868b] mt-0.5">Starting at $1,199</span>
+                <span class="block text-xs font-normal text-[#86868b] mt-0.5">From $1,199</span>
               </th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[#262626]/60 text-xs">
-            <tr>
-              <td class="py-4 text-[#86868b] font-medium">Form Factor</td>
-              <td class="py-4 text-white font-medium">Foldable Dual-Display Book Chassis</td>
-              <td class="py-4 text-[#86868b]">Monolithic Slab</td>
-            </tr>
+          <tbody class="divide-y divide-appleBorder/60 text-xs">
             <tr>
               <td class="py-4 text-[#86868b] font-medium">Displays</td>
-              <td class="py-4 text-white">
-                <span class="font-medium">Cover:</span> 5.5” Super Retina XDR<br/>
-                <span class="font-medium">Inner:</span> 7.8” ProMotion (1–120Hz)
-              </td>
-              <td class="py-4 text-[#86868b]">
-                <span class="font-medium">Display:</span> 6.9” Super Retina XDR ProMotion
-              </td>
+              <td class="py-4 text-white">5.5” Cover + 7.8” Inner 120Hz ProMotion</td>
+              <td class="py-4 text-[#86868b]">6.9” 120Hz ProMotion Monolith</td>
             </tr>
             <tr>
-              <td class="py-4 text-[#86868b] font-medium">Thickness &amp; Weight</td>
-              <td class="py-4 text-white">4.8mm unfolded / 9.6mm folded &bull; 238g</td>
-              <td class="py-4 text-[#86868b]">8.25mm &bull; 221g</td>
+              <td class="py-4 text-[#86868b] font-medium">Chassis Thickness</td>
+              <td class="py-4 text-white">4.8mm unfolded &bull; 9.6mm folded</td>
+              <td class="py-4 text-[#86868b]">8.25mm</td>
             </tr>
             <tr>
-              <td class="py-4 text-[#86868b] font-medium">Hinge &amp; Glass</td>
-              <td class="py-4 text-white">Zero-Crease Titanium Hinge &bull; Flexible Ceramic Shield</td>
-              <td class="py-4 text-[#86868b]">Rigid Ceramic Shield (Front &amp; Back)</td>
+              <td class="py-4 text-[#86868b] font-medium">Hinge Material</td>
+              <td class="py-4 text-white font-medium text-appleBlue">Grade 5 Titanium Synchro-Gears</td>
+              <td class="py-4 text-[#86868b]">N/A</td>
             </tr>
             <tr>
-              <td class="py-4 text-[#86868b] font-medium">Processor</td>
+              <td class="py-4 text-[#86868b] font-medium">Chip</td>
               <td class="py-4 text-white">A20 Pro (TSMC 2nm)</td>
               <td class="py-4 text-[#86868b]">A20 Pro (TSMC 2nm)</td>
             </tr>
             <tr>
               <td class="py-4 text-[#86868b] font-medium">Camera System</td>
-              <td class="py-4 text-white">
-                Dual 48MP Fusion Camera<br/>
-                <span class="text-[#86868b]">Main (24/48mm) + 5x Tetraprism Periscope</span>
-              </td>
-              <td class="py-4 text-[#86868b]">
-                Triple 48MP Fusion Pro Camera<br/>
-                <span>Main + Ultra Wide + 5x Telephoto</span>
-              </td>
+              <td class="py-4 text-white">Dual 48MP Fusion (Wide + 5x Tetraprism)</td>
+              <td class="py-4 text-[#86868b]">Triple 48MP Fusion (Ultra Wide, Wide, 5x)</td>
             </tr>
             <tr>
               <td class="py-4 text-[#86868b] font-medium">Biometrics</td>
@@ -420,12 +517,7 @@
             <tr>
               <td class="py-4 text-[#86868b] font-medium">Apple Pencil Support</td>
               <td class="py-4 text-appleBlue font-medium">Supported (Apple Pencil Pro)</td>
-              <td class="py-4 text-[#86868b]">Not Supported</td>
-            </tr>
-            <tr>
-              <td class="py-4 text-[#86868b] font-medium">Base Storage</td>
-              <td class="py-4 text-white">512GB standard</td>
-              <td class="py-4 text-[#86868b]">256GB standard</td>
+              <td class="py-4 text-[#86868b]">Not supported</td>
             </tr>
           </tbody>
         </table>
@@ -433,166 +525,98 @@
     </div>
   </section>
 
-  <!-- Section 5: Apple-Style Footer -->
-  <footer class="border-t border-[#262626] bg-[#000000] text-[#86868b] text-[11px] leading-relaxed py-12 px-6">
+  <!-- Section 5: Standard Apple Footer -->
+  <footer class="border-t border-appleBorder bg-black text-[#86868b] text-[11px] leading-relaxed py-12 px-6">
     <div class="max-w-[1024px] mx-auto space-y-8">
-      <!-- Legal / Disclaimers -->
-      <div class="space-y-2 border-b border-[#262626] pb-8">
-        <p>1. Trade-in values will vary based on the condition, year, and configuration of your eligible trade-in device. Not all devices are eligible for credit. You must be at least 18 years old to be eligible to trade in for credit or for an Apple Gift Card. Trade-in value may be applied toward qualifying new device purchase, or added to an Apple Gift Card.</p>
-        <p>2. The iPhone Duo zero-crease titanium hinge mechanism has been tested under simulated laboratory stresses exceeding 500,000 opening and closing cycles without structural degradation.</p>
-        <p>3. Apple Pencil Pro sold separately. Multi-window DuoOS capabilities require compatible app optimization through developer APIs.</p>
-        <p>4. Monthly pricing requires 24-month installment loan with 0% APR from Apple Card Monthly Installments in the United States.</p>
+      <div class="space-y-2 border-b border-appleBorder pb-8">
+        <p>1. iPhone Duo zero-crease titanium hinge mechanism tested to 500,000 cycles without loss of structural alignment.</p>
+        <p>2. Apple Pencil Pro sold separately. Multi-window DuoOS capabilities require compatible app optimization.</p>
+        <p>3. Trade-in values will vary based on device condition, year, and model.</p>
       </div>
 
-      <!-- Directory Links -->
-      <div class="grid grid-cols-2 sm:grid-cols-5 gap-6 text-[11px]">
-        <div class="space-y-2">
-          <div class="text-[#f5f5f7] font-semibold">Shop and Learn</div>
-          <div class="space-y-1.5 flex flex-col">
-            <a href="#" class="hover:text-[#f5f5f7]">Store</a>
-            <a href="#" class="hover:text-[#f5f5f7]">Mac</a>
-            <a href="#" class="hover:text-[#f5f5f7]">iPad</a>
-            <a href="#" class="hover:text-[#f5f5f7]">iPhone</a>
-            <a href="#" class="hover:text-[#f5f5f7]">Watch</a>
-            <a href="#" class="hover:text-[#f5f5f7]">Vision</a>
-          </div>
-        </div>
-        <div class="space-y-2">
-          <div class="text-[#f5f5f7] font-semibold">Apple Wallet</div>
-          <div class="space-y-1.5 flex flex-col">
-            <a href="#" class="hover:text-[#f5f5f7]">Wallet</a>
-            <a href="#" class="hover:text-[#f5f5f7]">Apple Card</a>
-            <a href="#" class="hover:text-[#f5f5f7]">Apple Pay</a>
-            <a href="#" class="hover:text-[#f5f5f7]">Apple Cash</a>
-          </div>
-        </div>
-        <div class="space-y-2">
-          <div class="text-[#f5f5f7] font-semibold">Account</div>
-          <div class="space-y-1.5 flex flex-col">
-            <a href="#" class="hover:text-[#f5f5f7]">Manage Your Apple ID</a>
-            <a href="#" class="hover:text-[#f5f5f7]">Apple Store Account</a>
-            <a href="#" class="hover:text-[#f5f5f7]">iCloud.com</a>
-          </div>
-        </div>
-        <div class="space-y-2">
-          <div class="text-[#f5f5f7] font-semibold">Entertainment</div>
-          <div class="space-y-1.5 flex flex-col">
-            <a href="#" class="hover:text-[#f5f5f7]">Apple TV+</a>
-            <a href="#" class="hover:text-[#f5f5f7]">Apple Music</a>
-            <a href="#" class="hover:text-[#f5f5f7]">Apple Arcade</a>
-            <a href="#" class="hover:text-[#f5f5f7]">Apple Fitness+</a>
-          </div>
-        </div>
-        <div class="space-y-2">
-          <div class="text-[#f5f5f7] font-semibold">About Apple</div>
-          <div class="space-y-1.5 flex flex-col">
-            <a href="#" class="hover:text-[#f5f5f7]">Newsroom</a>
-            <a href="#" class="hover:text-[#f5f5f7]">Apple Leadership</a>
-            <a href="#" class="hover:text-[#f5f5f7]">Career Opportunities</a>
-            <a href="#" class="hover:text-[#f5f5f7]">Investors</a>
-            <a href="#" class="hover:text-[#f5f5f7]">Ethics &amp; Compliance</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Copyright & Bottom Policy -->
-      <div class="flex flex-col sm:flex-row items-center justify-between pt-6 border-t border-[#262626] gap-4">
+      <div class="flex flex-col sm:flex-row items-center justify-between pt-4 gap-4">
         <div>Copyright &copy; 2026 Apple Inc. All rights reserved.</div>
         <div class="flex flex-wrap gap-4 text-[#86868b]">
-          <a href="#" class="hover:text-[#f5f5f7]">Privacy Policy</a>
+          <a href="#" class="hover:text-white">Privacy Policy</a>
           <span>|</span>
-          <a href="#" class="hover:text-[#f5f5f7]">Terms of Use</a>
+          <a href="#" class="hover:text-white">Terms of Use</a>
           <span>|</span>
-          <a href="#" class="hover:text-[#f5f5f7]">Sales Policy</a>
+          <a href="#" class="hover:text-white">Sales Policy</a>
           <span>|</span>
-          <a href="#" class="hover:text-[#f5f5f7]">Legal</a>
-          <span>|</span>
-          <a href="#" class="hover:text-[#f5f5f7]">Site Map</a>
+          <a href="#" class="hover:text-white">Legal</a>
         </div>
       </div>
     </div>
   </footer>
 
-  <!-- Interactivity Script -->
+  <!-- Scroll-Scrubbed Animation Engine -->
   <script>
     lucide.createIcons();
 
-    function setDeviceMode(mode) {
-      const wrapper = document.getElementById('device-wrapper');
-      const hinge = document.getElementById('center-hinge');
-      const rightPanel = document.getElementById('panel-right');
-      const uiCompact = document.getElementById('ui-compact');
-      const uiUnfoldedLeft = document.getElementById('ui-unfolded-left');
+    const scrollTrack = document.getElementById('hero-scroll-track');
+    const phoneRig = document.getElementById('phone-rig');
+    const rightChassis = document.getElementById('right-chassis');
+    const hingeSpine = document.getElementById('hinge-spine');
+    const lockscreenUi = document.getElementById('lockscreen-ui');
+    const unfoldedLeftUi = document.getElementById('unfolded-left-ui');
+    const heroHeadline = document.getElementById('hero-headline');
+    const heroSubtext = document.getElementById('hero-subtext');
+    const progressBar = document.getElementById('scroll-progress-bar');
+    const progressPercent = document.getElementById('progress-percent');
 
-      const btnFolded = document.getElementById('btn-folded');
-      const btnUnfolded = document.getElementById('btn-unfolded');
+    function updateHeroScroll() {
+      const rect = scrollTrack.getBoundingClientRect();
+      const trackHeight = scrollTrack.offsetHeight - window.innerHeight;
+      
+      // Calculate progress between 0.0 and 1.0
+      let progress = -rect.top / trackHeight;
+      progress = Math.max(0, Math.min(1, progress));
 
-      const metricDiag = document.getElementById('metric-diag');
-      const metricThick = document.getElementById('metric-thick');
-      const metricRes = document.getElementById('metric-res');
+      // 1. Update scrub bar UI
+      progressBar.style.width = `${progress * 100}%`;
+      progressPercent.textContent = `${Math.round(progress * 100)}% Unfolded`;
 
-      if (mode === 'unfolded') {
-        // Expand chassis
-        wrapper.classList.remove('w-[275px]');
-        wrapper.classList.add('w-[92%]', 'max-w-[580px]');
+      // 2. Continuous 3D Phone Rotations & Flap Unfold
+      // When progress = 0: Folded view (right flap turned inward, tilted towards viewer)
+      // When progress = 1: Fully open flat canvas facing camera
+      const flapAngle = (1 - progress) * -178; // 0deg (open) to -178deg (closed flap)
+      const rigRotateY = (1 - progress) * -18; // -18deg to 0deg
+      const rigRotateX = (1 - progress) * 8;   // 8deg to 0deg
+      const rigScale = 0.95 + (progress * 0.08); // slight zoom-in as it unfolds
 
-        // Open hinge
-        hinge.classList.remove('w-0');
-        hinge.classList.add('w-3', 'mx-1');
+      phoneRig.style.transform = `rotateX(${rigRotateX}deg) rotateY(${rigRotateY}deg) scale(${rigScale})`;
+      rightChassis.style.transform = `rotateY(${flapAngle}deg)`;
 
-        // Reveal right panel
-        rightPanel.classList.remove('w-0', 'opacity-0', 'p-0');
-        rightPanel.classList.add('w-full', 'opacity-100', 'border');
-
-        // Switch internal UIs
-        uiCompact.classList.remove('opacity-100');
-        uiCompact.classList.add('opacity-0', 'pointer-events-none');
-
-        uiUnfoldedLeft.classList.remove('opacity-0', 'pointer-events-none');
-        uiUnfoldedLeft.classList.add('opacity-100');
-
-        // Toggle buttons
-        btnUnfolded.classList.add('bg-white', 'text-black', 'shadow-sm');
-        btnUnfolded.classList.remove('text-[#86868b]');
-        btnFolded.classList.remove('bg-white', 'text-black', 'shadow-sm');
-        btnFolded.classList.add('text-[#86868b]');
-
-        // Metrics
-        metricDiag.textContent = '7.8”';
-        metricThick.textContent = '4.8mm';
-        metricRes.textContent = '3,000 nits';
+      // 3. Dynamic spine adjustment
+      if (progress > 0.05) {
+        hingeSpine.style.width = '10px';
       } else {
-        // Contract chassis
-        wrapper.classList.remove('w-[92%]', 'max-w-[580px]');
-        wrapper.classList.add('w-[275px]');
+        hingeSpine.style.width = '4px';
+      }
 
-        // Collapse hinge
-        hinge.classList.remove('w-3', 'mx-1');
-        hinge.classList.add('w-0');
+      // 4. Crossfade between cover lockscreen and inner workspace
+      if (progress > 0.45) {
+        lockscreenUi.style.opacity = '0';
+        lockscreenUi.style.pointerEvents = 'none';
+        unfoldedLeftUi.style.opacity = '1';
+        unfoldedLeftUi.style.pointerEvents = 'auto';
 
-        // Hide right panel
-        rightPanel.classList.remove('w-full', 'opacity-100', 'border');
-        rightPanel.classList.add('w-0', 'opacity-0', 'p-0');
+        heroHeadline.textContent = 'Unfold extraordinary.';
+        heroSubtext.textContent = 'A continuous 7.8” workspace with DuoOS and Apple Pencil Pro.';
+      } else {
+        lockscreenUi.style.opacity = '1';
+        lockscreenUi.style.pointerEvents = 'auto';
+        unfoldedLeftUi.style.opacity = '0';
+        unfoldedLeftUi.style.pointerEvents = 'none';
 
-        // Switch internal UIs
-        uiCompact.classList.remove('opacity-0', 'pointer-events-none');
-        uiCompact.classList.add('opacity-100');
-
-        uiUnfoldedLeft.classList.remove('opacity-100');
-        uiUnfoldedLeft.classList.add('opacity-0', 'pointer-events-none');
-
-        // Toggle buttons
-        btnFolded.classList.add('bg-white', 'text-black', 'shadow-sm');
-        btnFolded.classList.remove('text-[#86868b]');
-        btnUnfolded.classList.remove('bg-white', 'text-black', 'shadow-sm');
-        btnUnfolded.classList.add('text-[#86868b]');
-
-        // Metrics
-        metricDiag.textContent = '5.5”';
-        metricThick.textContent = '9.6mm';
-        metricRes.textContent = '2,200 nits';
+        heroHeadline.textContent = 'Folded agility.';
+        heroSubtext.textContent = 'Scroll to unfold the 7.8-inch continuous ProMotion canvas.';
       }
     }
+
+    window.addEventListener('scroll', updateHeroScroll, { passive: true });
+    window.addEventListener('resize', updateHeroScroll);
+    updateHeroScroll();
   </script>
 </body>
 </html>
