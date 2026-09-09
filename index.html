@@ -97,11 +97,29 @@
       </div>
     </nav>
 
-    <!-- Sub-nav -->
+    <!-- Sub-nav with Duo Raindrop Hinge Wordmark -->
     <div class="frosted-nav border-b border-[#232326]">
       <div class="max-w-[1024px] mx-auto px-6 h-12 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <span class="font-semibold text-lg tracking-tight text-white">iPhone Duo</span>
+        <div class="flex items-center space-x-2.5">
+          <!-- Mini Hinge Brand Lockup -->
+          <div class="flex items-center space-x-1.5">
+            <span class="font-normal text-xs tracking-tight text-[#86868b]">iPhone</span>
+            <svg class="h-4 w-auto" viewBox="0 0 200 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="miniNavTitanium" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffffff"/>
+                  <stop offset="50%" stop-color="#d4d4d8"/>
+                  <stop offset="100%" stop-color="#8e8e93"/>
+                </linearGradient>
+              </defs>
+              <!-- D Bookend -->
+              <path d="M10 6 H42 C58 6 68 15 68 26 C68 37 58 46 42 46 H10 V6 Z M24 17 V35 H40 C49 35 54 31 54 26 C54 21 49 17 40 17 H24 Z" fill="url(#miniNavTitanium)" />
+              <!-- U Raindrop Hinge Cavity -->
+              <path d="M82 6 H96 V28 C96 35 101 39 107 39 C113 39 118 35 118 28 V6 H132 V29 C132 41 121 48 107 48 C93 48 82 41 82 29 V6 Z" fill="url(#miniNavTitanium)" />
+              <!-- O Bookend -->
+              <path d="M190 6 H158 C142 6 132 15 132 26 C132 37 142 46 158 46 H190 V6 Z M176 17 H160 C151 17 146 21 146 26 C146 31 151 35 160 35 H176 V17 Z" fill="url(#miniNavTitanium)" />
+            </svg>
+          </div>
           <span class="text-[10px] uppercase font-bold tracking-wider bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text px-2 py-0.5 rounded-full border border-blue-500/30">New</span>
         </div>
         <div class="flex items-center space-x-6 text-xs">
@@ -117,15 +135,49 @@
 
   <!-- Section 1: Scroll-Scrubbed Sticky Hero Stage -->
   <div id="hero-scroll-track" class="relative h-[280vh] w-full">
-    <div class="sticky top-0 h-screen w-full flex flex-col items-center justify-between pt-24 sm:pt-28 pb-6 sm:pb-8 px-4 overflow-hidden">
+    <div class="sticky top-0 h-screen w-full flex flex-col items-center justify-between pt-20 sm:pt-24 pb-6 sm:pb-8 px-4 overflow-hidden">
       
-      <!-- Dynamic Scroll Headlines -->
-      <div class="text-center z-20 space-y-1.5 sm:space-y-2 max-w-3xl pointer-events-none transition-all duration-300">
-        <span class="text-[11px] sm:text-xs uppercase tracking-widest font-semibold text-appleBlue">iPhone Duo</span>
-        <h1 id="hero-headline" class="text-3xl sm:text-6xl md:text-7xl font-bold tracking-tight bg-gradient-to-b from-white via-white/95 to-white/40 text-transparent bg-clip-text transition-all duration-300">
+      <!-- Dynamic Scroll Headlines & Hero Brand Lockup -->
+      <div class="text-center z-20 space-y-2 max-w-3xl pointer-events-none transition-all duration-300 flex flex-col items-center">
+        
+        <!-- Apple Geometric Bookend Duo Brand Lockup -->
+        <div class="flex flex-col items-center justify-center space-y-1 select-none">
+          <span class="text-xs sm:text-sm font-medium tracking-[0.25em] text-[#86868b] uppercase pl-1">iPhone</span>
+          
+          <div class="relative py-1">
+            <svg class="h-10 sm:h-14 md:h-16 w-auto drop-shadow-[0_10px_30px_rgba(255,255,255,0.12)]" viewBox="0 0 310 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="heroTitanium" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffffff"/>
+                  <stop offset="28%" stop-color="#f5f5f7"/>
+                  <stop offset="50%" stop-color="#8e8e93"/>
+                  <stop offset="72%" stop-color="#ffffff"/>
+                  <stop offset="100%" stop-color="#a1a1a6"/>
+                </linearGradient>
+                <linearGradient id="hingeGlow" x1="50%" y1="0%" x2="50%" y2="100%">
+                  <stop offset="0%" stop-color="#2997ff" stop-opacity="0.9"/>
+                  <stop offset="100%" stop-color="#0071e3" stop-opacity="0.3"/>
+                </linearGradient>
+              </defs>
+
+              <!-- D Bookend: Left Flat Spine, Rounded Outer Perimeter (Left Chassis Representation) -->
+              <path d="M12 6 H64 C90 6 106 19 106 34 C106 49 90 62 64 62 H12 V6 Z M32 20 V48 H60 C76 48 86 42 86 34 C86 26 76 20 60 20 H32 Z" fill="url(#heroTitanium)" />
+
+              <!-- U Center: Precision Raindrop Hinge Cavity Loop -->
+              <path d="M128 6 H148 V38 C148 46 154 51 162 51 C170 51 176 46 176 38 V6 H196 V39 C196 54 182 64 162 64 C142 64 128 54 128 39 V6 Z" fill="url(#heroTitanium)" />
+              <!-- Sub-micron hinge laser notch accent -->
+              <circle cx="162" cy="40" r="2.5" fill="url(#hingeGlow)" />
+
+              <!-- O Bookend: Right Flat Spine, Rounded Left Outer Perimeter (Right Chassis Representation) -->
+              <path d="M298 6 H246 C220 6 204 19 204 34 C204 49 220 62 246 62 H298 V6 Z M278 20 H250 C234 20 224 26 224 34 C224 42 234 48 250 48 H278 V20 Z" fill="url(#heroTitanium)" />
+            </svg>
+          </div>
+        </div>
+
+        <h1 id="hero-headline" class="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight bg-gradient-to-b from-white via-white/95 to-white/40 text-transparent bg-clip-text transition-all duration-300">
           Folded agility.
         </h1>
-        <p id="hero-subtext" class="text-sm sm:text-xl text-[#86868b] font-normal transition-all duration-300">
+        <p id="hero-subtext" class="text-sm sm:text-lg text-[#86868b] font-normal transition-all duration-300">
           Scroll to unfold the 7.8-inch continuous ProMotion canvas.
         </p>
       </div>
@@ -707,7 +759,6 @@
       }
 
       // Smooth fold angle from closed (+178deg behind) to open (0deg flat)
-      // Folding behind ensures the cover screen remains clean and centered in front without mirrored backface artifacts
       const flapAngle = (1 - progress) * 178;
       const rigRotateY = (1 - progress) * -16;
       const rigRotateX = (1 - progress) * 6;
